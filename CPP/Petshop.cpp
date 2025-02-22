@@ -1,4 +1,4 @@
-/* Saya RAFFI ADZRIL ALFAIZ dengan NIM 2308355 kelas C1 mengerjakan evaluasi Latihan Praktikum dalam mata kuliah Desain Pemrograman Berbasis Objek
+/*Saya RAFFI ADZRIL ALFAIZ dengan NIM 2308355 kelas C1 mengerjakan evaluasi Latihan Praktikum dalam mata kuliah Desain Pemrograman Berbasis Objek
 Materi Kelas Enkapsulasi untuk keberkahanNya maka saya tidak melakukan kecurangan 
 seperti yang telah dispesifikasikan. Aamiin. */
 
