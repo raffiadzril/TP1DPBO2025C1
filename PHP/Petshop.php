@@ -64,12 +64,6 @@ class Petshop { // Mendeklarasikan kelas Petshop
         $this->foto = $foto; // Mengatur nilai foto
     }
 
-    // Method untuk menampilkan produk
-    public function show_produk() {
-        printf("| %-2d | %-24s | %-25s | %-13.2f | %-25s |\n", 
-            $this->id, $this->nama_produk, $this->kategori_produk, $this->harga_produk, $this->foto); // Menampilkan detail produk
-    }
-
     // Method untuk menambahkan atau mengedit produk
     public function add_edit_produk($id, $nama_produk, $kategori_produk, $harga_produk, $foto) {
         $this->id = $id; // Mengatur nilai id
@@ -81,7 +75,7 @@ class Petshop { // Mendeklarasikan kelas Petshop
 
     // Method untuk mencari produk berdasarkan nama_produk
     public function search_produk($nama_produk) {
-        if ($this->nama_produk === $nama_produk) { // Membandingkan nama_produk
+        if (strpos(strtolower($this->nama_produk), strtolower($nama_produk)) !== FALSE) { // Membandingkan nama_produk
             return 1; // Mengembalikan nilai 1 jika ditemukan
         } else {
             return 0; // Mengembalikan nilai 0 jika tidak ditemukan

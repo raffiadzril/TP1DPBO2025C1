@@ -1,7 +1,8 @@
 <?php
-include 'Petshop.php';
+include 'Petshop.php'; // Meng-include file Petshop.php yang berisi definisi class Petshop
+session_start(); // Memulai session untuk web
 
-session_start();
+// Jika session 'listProduk' belum ada, maka buat session tersebut dengan beberapa produk awal
 if (!isset($_SESSION['listProduk'])) {
     $_SESSION['listProduk'] = [
         new Petshop(1, "Whiskas", "Makanan Kucing", 30000, "asset/whiskas.png"),
@@ -9,45 +10,68 @@ if (!isset($_SESSION['listProduk'])) {
         new Petshop(3, "Takari", "Makanan Ikan", 10000, "asset/takari.png")
     ];
 }
-$listProduk = &$_SESSION['listProduk'];
 
+$listProduk = &$_SESSION['listProduk']; // Mengisi list produk dengan session
+
+// Jika request method adalah POST (untuk add, edit, dan delete)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $id = isset($_POST['id']) ? (int) $_POST['id'] : null;
-    $nama = isset($_POST['nama_produk']) ? htmlspecialchars($_POST['nama_produk']) : '';
-    $kategori = isset($_POST['kategori_produk']) ? htmlspecialchars($_POST['kategori_produk']) : '';
-    $harga = isset($_POST['harga_produk']) ? (int) $_POST['harga_produk'] : 0;
-    $foto = isset($_POST['foto_produk']) ? htmlspecialchars($_POST['foto_produk']) : '';
+    $id = isset($_POST['id']) ? (int) $_POST['id'] : null; // Mengambil id dari POST
+    $nama = isset($_POST['nama_produk']) ? htmlspecialchars($_POST['nama_produk']) : ''; // Mengambil nama produk dari POST
+    $kategori = isset($_POST['kategori_produk']) ? htmlspecialchars($_POST['kategori_produk']) : ''; // Mengambil kategori produk dari POST
+    $harga = isset($_POST['harga_produk']) ? (int) $_POST['harga_produk'] : 0; // Mengambil harga produk dari POST
+    $foto = isset($_POST['foto_produk']) ? htmlspecialchars($_POST['foto_produk']) : ''; // Mengambil foto produk dari POST
 
+    // Jika tombol add ditekan, tambahkan produk baru
     if (isset($_POST['add'])) {
-        $newId = count($listProduk) + 1;
-        $listProduk[] = new Petshop($newId, $nama, $kategori, $harga, $foto);
+        $newId = count($listProduk) + 1; // Menghitung id baru secara auto increment
+        $tambah_produk = new Petshop(); // Membuat objek Petshop baru
+        $tambah_produk->add_edit_produk($newId, $nama, $kategori, $harga, $foto); // Mengisi objek dengan data
+        $listProduk[] = $tambah_produk; // Menambahkan objek ke array listProduk
+    
+    // Jika tombol edit ditekan, edit produk yang ada
     } elseif (isset($_POST['edit'])) {
-        foreach ($listProduk as $produk) {
-            if ($produk->getId() == $id) {
-                $produk->setNama_produk($nama);
-                $produk->setKategori_produk($kategori);
-                $produk->setHarga_produk($harga);
+        $key = 0; // Inisialisasi key
+        $stop = false; // Inisialisasi stop
+        while ($key < count($listProduk) && !$stop) {
+            if ($listProduk[$key]->getId() == $id) { // Jika id produk sesuai
+                $listProduk[$key]->setNama_produk($nama); // Set nama produk
+                $listProduk[$key]->setKategori_produk($kategori); // Set kategori produk
+                $listProduk[$key]->setHarga_produk($harga); // Set harga produk
                 if (!empty($foto)) {
-                    $produk->setFoto($foto);
+                    $listProduk[$key]->setFoto($foto); // Set foto produk jika tidak kosong
                 }
-                break;
+                $stop = true; // Hentikan loop
             }
+            $key++;
         }
+    // Jika tombol delete ditekan, hapus produk
     } elseif (isset($_POST['delete'])) {
-        foreach ($listProduk as $key => $produk) {
-            if ($produk->getId() == $id) {
-                unset($listProduk[$key]);
-                $listProduk = array_values($listProduk);
-                break;
+        $key = 0; // Inisialisasi key
+        $stop = false; // Inisialisasi stop
+        while ($key < count($listProduk) && !$stop) {
+            if ($listProduk[$key]->getId() == $id) { // Jika id produk sesuai
+                unset($listProduk[$key]); // Hapus produk dari array
+                $listProduk = array_values($listProduk); // Reindex array
+                $stop = true; // Hentikan loop
             }
+            $key++;
         }
     }
 }
 
-$searchQuery = isset($_GET['search']) ? htmlspecialchars($_GET['search']) : '';
-$filteredProduk = array_filter($listProduk, function($produk) use ($searchQuery) {
-    return stripos($produk->getNama_produk(), $searchQuery) !== false;
-});
+$filteredProduk = []; // Inisialisasi array untuk produk yang difilter
+if (isset($_GET['search'])) {
+    $cari = htmlspecialchars($_GET['search']); // Mengambil keyword pencarian dari GET
+} else {
+    $cari = ''; // Jika tidak ada keyword pencarian, set kosong
+}
+
+// Filter produk berdasarkan keyword pencarian
+foreach ($listProduk as $produk) {
+    if ($produk->search_produk($cari)) {
+        $filteredProduk[] = $produk; // Tambahkan produk yang sesuai ke array filteredProduk
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -58,6 +82,7 @@ $filteredProduk = array_filter($listProduk, function($produk) use ($searchQuery)
     <title>Zrill Petshop</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script>
+        // Fungsi untuk mengisi form edit dengan data produk yang dipilih
         function fillEditForm(id, nama, kategori, harga, foto) {
             document.getElementById('edit_id').value = id;
             document.getElementById('edit_nama').value = nama;
@@ -74,7 +99,7 @@ $filteredProduk = array_filter($listProduk, function($produk) use ($searchQuery)
 <body>
     <div class="container mt-5">
         <h2 class="text-center">Zrill Petshop</h2>
-
+        <!-- FORM TAMBAH PRODUK -->
         <div class="row">
             <div class="col-md-6">
                 <h3 class="mt-4">Tambah Produk</h3>
@@ -113,7 +138,7 @@ $filteredProduk = array_filter($listProduk, function($produk) use ($searchQuery)
                     <button type="submit" name="add" class="btn btn-success">Tambah</button>
                 </form>
             </div>
-
+            <!-- FORM EDIT PRODUK -->
             <div class="col-md-6">
                 <h3 class="mt-4">Edit Produk</h3>
                 <form method="POST">
@@ -154,10 +179,11 @@ $filteredProduk = array_filter($listProduk, function($produk) use ($searchQuery)
             </div>
         </div>
 
+        <!-- TABEL DAFTAR PRODUK DAN SEARCH -->
         <h3 class="mt-5">Daftar Produk</h3>
         <form method="GET" class="mb-3">
             <div class="input-group">
-                <input type="text" class="form-control" name="search" placeholder="Cari produk..." value="<?= $searchQuery ?>">
+                <input type="text" class="form-control" name="search" placeholder="Cari produk..." value="<?= $cari ?>">
                 <button type="submit" class="btn btn-primary">Cari</button>
             </div>
         </form>
@@ -179,7 +205,7 @@ $filteredProduk = array_filter($listProduk, function($produk) use ($searchQuery)
                         <td><?= $produk->getNama_produk() ?></td>
                         <td><?= $produk->getKategori_produk() ?></td>
                         <td>Rp<?= number_format($produk->getHarga_produk(), 0, ',', '.') ?></td>
-                        <td><img src="<?= $produk->getFoto() ?>" width="50"></td>
+                        <td><img src="<?= $produk->getFoto() ?>" width="50"><?= $produk->getFoto()?></td>
                         <td>
                             <button type="button" class="btn btn-primary btn-sm" 
                                 onclick="fillEditForm('<?= $produk->getId() ?>', '<?= $produk->getNama_produk() ?>', '<?= $produk->getKategori_produk() ?>', '<?= $produk->getHarga_produk() ?>', '<?= $produk->getFoto() ?>')">
