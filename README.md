@@ -23,13 +23,13 @@ Saya **Raffi Adzril Alfaiz** dengan **NIM 2308355** mengerjakan Latihan Praktiku
 ![Show, Add, Delete - Java](https://github.com/raffiadzril/LP1DPBO2025C1/blob/main/JAVA/DOKUMENTASI/add_delete.png)  
 
 #### **Output Program untuk Delete dan Search by nama_produk**  
-![Delete & Search - Java](https://github.com/raffiadzril/LP1DPBO2025C1/blob/main/JAVA/DOKUMENTASI/EDIT_SEARCH.png)  
+![Delete & Search - Java](https://github.com/raffiadzril/LP1DPBO2025C1/blob/main/JAVA/DOKUMENTASI/edit_search.png)  
 
 ---
 
 ### **3. Python**  
 #### **Output Program untuk Show, Add, dan Delete**  
-![Show, Add- Python](https://github.com/raffiadzril/LP1DPBO2025C1/blob/main/PYTHON/DOKUMENTASI/show_add.png)  
+![Show, Add- Python](https://github.com/raffiadzril/LP1DPBO2025C1/blob/main/Python/DOKUMENTASI/show_add.png)  
 
 #### **Output Program untuk Delete dan Edit by nama_produk**  
 ![Delete & Edit - Python](https://github.com/raffiadzril/LP1DPBO2025C1/blob/main/Python/DOKUMENTASI/delete_edit.png)
